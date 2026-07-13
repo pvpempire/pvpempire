@@ -2,5 +2,9 @@
   { "role": "Server Owner", "name": "-", "dynamic": "owner" },
   { "role": "Website", "name": "x9jm" },
   { "role": "Server API", "name": "ziadlive & x9jm" },
-  { "role": "Featured", "name": "Montresique"}
+  { "role": "Featured", "name": "Montresique" },
+  { "role": "Painter", "name": "Blade" },
+  { "role": "Partly Featured", "name": "MTCTiers" },
+  { "role": "Duel System Creator", "name": "Mario & TimmyLoal" },
+  { "role": "Spawn Creator", "name": "x9jm" }
 ]
