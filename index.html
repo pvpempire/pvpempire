@@ -22,6 +22,7 @@
     <nav class="site-nav">
       <a href="#top" data-page="top">Home</a>
       <a href="#server" data-page="server">Server</a>
+      <a href="#leaderboard" data-page="leaderboard">Leaderboard</a>
       <a href="#staff" data-page="staff">Staff</a>
       <a href="#credits" data-page="credits">Credits</a>
     </nav>
@@ -97,11 +98,27 @@
     </div>
   </section>
 
+  <!-- ===== Leaderboard ===== -->
+  <section class="section page-section" id="leaderboard">
+    <h2 class="page-title">Empire <em>Leaderboard</em></h2>
+    <p class="page-sub">Top players of PvP Empire. Click on a player to check their tier rank on mtctiers.com.</p>
+    <div class="leaderboard-grid" id="leaderboard-grid">
+      <div class="leaderboard-loading">Loading leaderboard&hellip;</div>
+    </div>
+  </section>
+
   <!-- ===== Staff ===== -->
   <section class="section page-section" id="staff">
     <h2 class="page-title">Admins &amp; <em>Staff</em></h2>
     <div class="staff-grid" id="staff-grid">
       <div class="staff-loading">Loading staff roster&hellip;</div>
+    </div>
+  </section>
+
+  <!-- ===== Staff Profile ===== -->
+  <section class="section page-section" id="profile">
+    <div id="profile-container">
+      <div class="profile-loading">Loading profile&hellip;</div>
     </div>
   </section>
 
@@ -150,6 +167,7 @@ const CONFIG = {
 
   ADMINS_JSON: "data/admins.json",
   CREDITS_JSON: "data/credits.json",
+  LEADERBOARD_JSON: "data/leaderboard.json",
 
   SKIN_PATH: "assets/skins/",
   GENDER_ICONS: {
@@ -159,6 +177,10 @@ const CONFIG = {
     "admin": "assets/gender_admin.png",
     "staff": "assets/gender_staff.png"
   },
+};
+
+const state = {
+  admins: []
 };
 
 const ESC = "\u001b";
@@ -357,34 +379,143 @@ function closePlayersModal() {
 /* ==========================================================
    STAFF ROSTER (staff.html)
    ========================================================== */
-async function loadStaff() {
-  const grid = $id("staff-grid");
-  if (!grid) return;
+async function getAdmins() {
+  if (state.admins.length) return state.admins;
   try {
     const res = await fetch(CONFIG.ADMINS_JSON, { cache: "no-store" });
     if (!res.ok) throw new Error("Bad response " + res.status);
-    const admins = await res.json();
+    state.admins = await res.json();
+    return state.admins;
+  } catch (err) {
+    console.error("Failed to load admins:", err);
+    return [];
+  }
+}
 
-    if (!Array.isArray(admins) || !admins.length) {
-      grid.innerHTML = `<div class="staff-loading">No staff listed yet.</div>`;
+async function loadStaff() {
+  const grid = $id("staff-grid");
+  if (!grid) return;
+  grid.innerHTML = `<div class="staff-loading">Loading staff roster&hellip;</div>`;
+  const admins = await getAdmins();
+  if (!admins.length) {
+    grid.innerHTML = `<div class="staff-loading">No staff listed yet.</div>`;
+    return;
+  }
+
+  grid.innerHTML = admins.map((a, i) => {
+    const username = a.username || "";
+    const skin = CONFIG.SKIN_PATH + username.toLowerCase() + ".png";
+    return `
+      <a href="#profile?username=${encodeURIComponent(username)}" class="staff-card slot reveal" style="transition-delay:${i * 60}ms">
+        <img class="staff-skin" src="${skin}" alt="${escapeHtml(username)} skin"
+             onerror="this.remove();">
+        <div class="staff-name">${escapeHtml(username)}</div>
+        <span class="staff-rank">${escapeHtml(a.rank || "Staff")}</span>
+      </a>`;
+  }).join("");
+  observeReveals();
+}
+
+/* ==========================================================
+   STAFF PROFILE (profile.html)
+   ========================================================== */
+async function renderProfilePage(username) {
+  const container = $id("profile-container");
+  if (!container) return;
+  
+  if (!username) {
+    container.innerHTML = `<div class="profile-error">No username specified.</div>`;
+    return;
+  }
+  
+  container.innerHTML = `<div class="profile-loading">Loading profile&hellip;</div>`;
+  
+  const admins = await getAdmins();
+  const staff = admins.find(a => a.username.toLowerCase() === username.toLowerCase());
+  
+  if (!staff) {
+    container.innerHTML = `
+      <div class="profile-error">
+        <h3>Staff Member Not Found</h3>
+        <p>Could not find a staff member named "${escapeHtml(username)}".</p>
+        <a href="#staff" class="btn btn--ghost">&larr; Back to Staff</a>
+      </div>`;
+    return;
+  }
+  
+  const skin = CONFIG.SKIN_PATH + staff.username.toLowerCase() + ".png";
+  
+  container.innerHTML = `
+    <div class="profile-header-back">
+      <a href="#staff" class="back-link">&larr; Back to Staff</a>
+    </div>
+    <div class="profile-card slot">
+      <div class="profile-hero">
+        <img class="profile-skin" src="${skin}" alt="${escapeHtml(staff.username)} skin" onerror="this.style.display='none';">
+        <div class="profile-identity">
+          <h2 class="profile-name">${escapeHtml(staff.username)}</h2>
+          <span class="profile-rank-badge">${escapeHtml(staff.rank || "Staff")}</span>
+        </div>
+      </div>
+      
+      <div class="profile-info-box slot">
+        <h4 class="info-box-title">ABOUT</h4>
+        <div class="info-box-content">
+          <p class="placeholder-text">Description and profile details for ${escapeHtml(staff.username)} will be added here soon.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ==========================================================
+   LEADERBOARD (leaderboard.html)
+   ========================================================== */
+async function loadLeaderboard() {
+  const grid = $id("leaderboard-grid");
+  if (!grid) return;
+  try {
+    const res = await fetch(CONFIG.LEADERBOARD_JSON, { cache: "no-store" });
+    if (!res.ok) throw new Error("Bad response " + res.status);
+    const leaderboard = await res.json();
+
+    if (!Array.isArray(leaderboard) || !leaderboard.length) {
+      grid.innerHTML = `<div class="leaderboard-loading">No leaderboard entries yet.</div>`;
       return;
     }
 
-    grid.innerHTML = admins.map((a, i) => {
-      const username = a.username || "";
-      const skin = CONFIG.SKIN_PATH + username.toLowerCase() + ".png";
+    grid.innerHTML = leaderboard.map((player, i) => {
+      const username = player.username || "";
+      const rankNum = player.rank || (i + 1);
+      
+      let rankBadge = `#${rankNum}`;
+      let rankClass = "";
+      if (rankNum === 1) {
+        rankBadge = "🏆 #1";
+        rankClass = "rank-first";
+      } else if (rankNum === 2) {
+        rankBadge = "🥈 #2";
+        rankClass = "rank-second";
+      } else if (rankNum === 3) {
+        rankBadge = "🥉 #3";
+        rankClass = "rank-third";
+      }
+
       return `
-        <div class="staff-card slot reveal" style="transition-delay:${i * 60}ms">
-          <img class="staff-skin" src="${skin}" alt="${escapeHtml(username)} skin"
-               onerror="this.remove();">
-          <div class="staff-name">${escapeHtml(username)}</div>
-          <span class="staff-rank">${escapeHtml(a.rank || "Staff")}</span>
-        </div>`;
+        <a href="https://mtctiers.com/?player=${encodeURIComponent(username)}" 
+           target="_blank" 
+           rel="noopener" 
+           class="leaderboard-row slot reveal ${rankClass}" 
+           style="transition-delay:${i * 40}ms">
+          <div class="leaderboard-rank">${rankBadge}</div>
+          <div class="leaderboard-name">${escapeHtml(username)}</div>
+          <div class="leaderboard-action">View Tier &nearr;</div>
+        </a>`;
     }).join("");
     observeReveals();
   } catch (err) {
-    console.error("Failed to load staff roster:", err);
-    grid.innerHTML = `<div class="staff-loading">Unable to load staff roster.</div>`;
+    console.error("Failed to load leaderboard:", err);
+    grid.innerHTML = `<div class="leaderboard-loading">Unable to load leaderboard.</div>`;
   }
 }
 
@@ -438,9 +569,13 @@ function observeReveals() {
 /* ==========================================================
    ROUTER — only one section (page) is visible at a time
    ========================================================== */
-const PAGES = ["top", "server", "staff", "credits"];
+const PAGES = ["top", "server", "leaderboard", "staff", "credits", "profile"];
 
-function showPage(page) {
+function showPage(pageWithQuery) {
+  const parts = pageWithQuery.split("?");
+  let page = parts[0];
+  const query = parts[1] || "";
+
   if (!PAGES.includes(page)) page = "top";
 
   document.querySelectorAll(".page-section").forEach(sec => {
@@ -449,6 +584,12 @@ function showPage(page) {
   document.querySelectorAll(".site-nav a").forEach(a => {
     a.classList.toggle("is-active", a.dataset.page === page);
   });
+
+  if (page === "profile") {
+    const params = new URLSearchParams(query);
+    const username = params.get("username");
+    renderProfilePage(username);
+  }
 
   window.scrollTo({ top: 0 });
   observeReveals();
@@ -532,6 +673,7 @@ function init() {
   // Each page only has the elements relevant to it — loadServer()
   // and the others all no-op gracefully where their targets are absent.
   if ($id("server-name") || $id("hero-status-dot")) loadServer();
+  if ($id("leaderboard-grid")) loadLeaderboard();
   if ($id("staff-grid")) loadStaff();
   if ($id("credits-list")) loadCredits();
 }

@@ -296,6 +296,7 @@ h1, h2, h3, h4, p, code { font-family: var(--font-mc); }
   color: var(--text-faint); font-size: 13px; padding: 20px 4px; grid-column: 1 / -1;
 }
 .staff-card {
+  display: block;
   padding: 16px; text-align: center; transition: transform 0.15s, background 0.15s;
 }
 .staff-card:hover { transform: translateY(-2px); background: var(--slot-hover); }
@@ -401,4 +402,200 @@ h1, h2, h3, h4, p, code { font-family: var(--font-mc); }
   .site-nav { gap: 0; }
   .hero-status { flex-direction: column; gap: 8px; }
   .hero-status-divider { display: none; }
+}
+
+/* ---------- leaderboard grid / rows ---------- */
+.leaderboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.leaderboard-loading {
+  color: var(--text-faint);
+  font-size: 13px;
+  padding: 20px 4px;
+}
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  transition: transform 0.15s, background 0.15s;
+  cursor: pointer;
+}
+.leaderboard-row:hover {
+  transform: translateX(4px);
+  background: var(--slot-hover);
+}
+.leaderboard-row:active {
+  transform: translateX(2px);
+}
+.leaderboard-rank {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--text-dim);
+  width: 70px;
+}
+.leaderboard-name {
+  font-size: 16px;
+  color: var(--text);
+  flex: 1;
+}
+.leaderboard-action {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--text-faint);
+  transition: color 0.15s;
+}
+.leaderboard-row:hover .leaderboard-action {
+  color: var(--gold);
+}
+
+/* Custom top 3 styling */
+.leaderboard-row.rank-first {
+  border-color: var(--gold);
+}
+.leaderboard-row.rank-first .leaderboard-rank {
+  color: #ffd700; /* gold trophy color */
+}
+.leaderboard-row.rank-first .leaderboard-name {
+  color: #ffd700;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+}
+.leaderboard-row.rank-second {
+  border-color: var(--text-dim);
+}
+.leaderboard-row.rank-second .leaderboard-rank {
+  color: #c0c0c0; /* silver trophy color */
+}
+.leaderboard-row.rank-third {
+  border-color: var(--gold-dim);
+}
+.leaderboard-row.rank-third .leaderboard-rank {
+  color: #cd7f32; /* bronze trophy color */
+}
+
+/* ---------- staff profile page ---------- */
+.profile-header-back {
+  margin-bottom: 24px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  transition: color 0.15s;
+}
+.back-link:hover {
+  color: var(--gold);
+}
+
+.profile-card {
+  padding: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-skin {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  object-fit: contain;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  image-rendering: pixelated;
+  box-shadow: inset 1px 1px 0 var(--bevel-light), inset -1px -1px 0 var(--bevel-dark);
+}
+
+.profile-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.profile-name {
+  font-size: 28px;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  color: var(--text);
+}
+
+.profile-rank-badge {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  background: var(--bg-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 4px 12px;
+}
+
+.profile-info-box {
+  padding: 20px;
+  background: var(--panel-2); /* slightly darker/contrasting panel for the description */
+}
+
+.info-box-title {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.info-box-content {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.placeholder-text {
+  margin: 0;
+  font-style: italic;
+}
+
+.profile-loading, .profile-error {
+  color: var(--text-faint);
+  font-size: 14px;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.profile-error h3 {
+  color: var(--redstone);
+  font-size: 18px;
+  margin: 0 0 10px;
+}
+
+.profile-error p {
+  color: var(--text-dim);
+  margin: 0 0 20px;
+}
+
+@media (max-width: 640px) {
+  .profile-hero {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .profile-identity {
+    align-items: center;
+  }
+  .profile-card {
+    padding: 20px;
+  }
 }
