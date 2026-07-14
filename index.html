@@ -445,6 +445,17 @@ async function renderProfilePage(username) {
   
   const skin = CONFIG.SKIN_PATH + staff.username.toLowerCase() + ".png";
   
+  let tierLinkHtml = "";
+  if (!["mario34", "blade"].includes(staff.username.toLowerCase())) {
+    tierLinkHtml = `
+      <div class="profile-tier">
+        <span class="tier-label">Tier Rank:</span>
+        <a href="https://mtctiers.com/?player=${encodeURIComponent(staff.username)}" target="_blank" rel="noopener" class="profile-tier-link">
+          View on mtctiers.com &nearr;
+        </a>
+      </div>`;
+  }
+  
   container.innerHTML = `
     <div class="profile-header-back">
       <a href="#staff" class="back-link">&larr; Back to Staff</a>
@@ -455,12 +466,7 @@ async function renderProfilePage(username) {
         <div class="profile-identity">
           <h2 class="profile-name">${escapeHtml(staff.username)}</h2>
           <span class="profile-rank-badge">${escapeHtml(staff.rank || "Staff")}</span>
-          <div class="profile-tier">
-            <span class="tier-label">Tier Rank:</span>
-            <a href="https://mtctiers.com/?player=${encodeURIComponent(staff.username)}" target="_blank" rel="noopener" class="profile-tier-link">
-              View on mtctiers.com &nearr;
-            </a>
-          </div>
+          ${tierLinkHtml}
         </div>
       </div>
       
