@@ -455,6 +455,12 @@ async function renderProfilePage(username) {
         <div class="profile-identity">
           <h2 class="profile-name">${escapeHtml(staff.username)}</h2>
           <span class="profile-rank-badge">${escapeHtml(staff.rank || "Staff")}</span>
+          <div class="profile-tier">
+            <span class="tier-label">Tier Rank:</span>
+            <a href="https://mtctiers.com/?player=${encodeURIComponent(staff.username)}" target="_blank" rel="noopener" class="profile-tier-link">
+              View on mtctiers.com &nearr;
+            </a>
+          </div>
         </div>
       </div>
       

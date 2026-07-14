@@ -599,3 +599,20 @@ h1, h2, h3, h4, p, code { font-family: var(--font-mc); }
     padding: 20px;
   }
 }
+
+.profile-tier {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.profile-tier-link {
+  color: var(--gold);
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+.profile-tier-link:hover {
+  color: var(--text);
+}
