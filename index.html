@@ -511,6 +511,7 @@ async function loadLeaderboard() {
     grid.innerHTML = leaderboard.map((player, i) => {
       const username = player.username || "";
       const rankNum = player.rank || (i + 1);
+      const link = player.link || `${CONFIG.TIERS_BASE_URL}${encodeURIComponent(username)}`;
       
       let rankBadge = `#${rankNum}`;
       let rankClass = "";
@@ -526,7 +527,7 @@ async function loadLeaderboard() {
       }
 
       return `
-        <a href="${CONFIG.TIERS_BASE_URL}${encodeURIComponent(username)}" 
+        <a href="${escapeHtml(link)}" 
            target="_blank" 
            rel="noopener" 
            class="leaderboard-row slot reveal ${rankClass}" 
