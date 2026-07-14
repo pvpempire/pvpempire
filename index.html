@@ -179,6 +179,7 @@ const CONFIG = {
   CREDITS_JSON: "data/credits.json",
   LEADERBOARD_JSON: "data/leaderboard.json",
   HALLOFFAME_JSON: "data/halloffame.json",
+  TIERS_BASE_URL: "https://mtctiers.com/?player=",
 
   SKIN_PATH: "assets/skins/",
   GENDER_ICONS: {
@@ -461,7 +462,7 @@ async function renderProfilePage(username) {
     tierLinkHtml = `
       <div class="profile-tier">
         <span class="tier-label">Tier Rank:</span>
-        <a href="https://mtctiers.com/?player=${encodeURIComponent(staff.username)}" target="_blank" rel="noopener" class="profile-tier-link">
+        <a href="${CONFIG.TIERS_BASE_URL}${encodeURIComponent(staff.username)}" target="_blank" rel="noopener" class="profile-tier-link">
           View on mtctiers.com &nearr;
         </a>
       </div>`;
@@ -525,7 +526,7 @@ async function loadLeaderboard() {
       }
 
       return `
-        <a href="https://mtctiers.com/?player=${encodeURIComponent(username)}" 
+        <a href="${CONFIG.TIERS_BASE_URL}${encodeURIComponent(username)}" 
            target="_blank" 
            rel="noopener" 
            class="leaderboard-row slot reveal ${rankClass}" 
